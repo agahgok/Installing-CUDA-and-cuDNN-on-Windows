@@ -132,3 +132,119 @@ Cuda compilation tools, release 12.4, V12.4.131
 ```
 
 If you see your CUDA version listed, congratulations—CUDA is installed correctly!
+
+## 📥 Download & Install cuDNN
+
+Once CUDA is installed and your environment variables are updated, you’re ready to install cuDNN.
+
+1. Visit the cuDNN Archive:  
+   https://developer.nvidia.com/rdp/cudnn-archive  
+   ![1_Gs2oFRZLYF6HNM4IE9dPwA](https://github.com/user-attachments/assets/d8d19315-b558-4d64-bd94-610364767247)
+
+
+2. From the list, choose the cuDNN release that matches your CUDA version (for example, **cuDNN v8.9.7** for CUDA 12.x).
+
+3. Click the cuDNN version you need (for example, **cuDNN v8.9.7** for CUDA 12.x). You’ll be prompted to sign in or register for a free NVIDIA Developer account—complete that to access the download.
+
+4. On the download page, select your OS and package format:
+   - **Operating System:** Windows  
+   - **Package Format:** ZIP  
+
+   ![1__67SGk0CaSWpcaPfcbvSaw](https://github.com/user-attachments/assets/539c3eeb-f9db-4e7c-abfa-92812e237c76)
+
+5. **Extract & Copy cuDNN Files**
+
+   - Unzip the downloaded cuDNN archive to a temporary folder.  
+   - Copy the folders into your CUDA installation (replace `v12.4` with your version):
+
+     | Source Folder      | Destination Path                                                |
+     | ------------------ | --------------------------------------------------------------- |
+     | `bin\*`            | `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4\bin\`  |
+     | `include\*`        | `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4\include\` |
+     | `lib\x64\*`        | `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.4\lib\x64\` |
+
+6. **Update Environment Variables**
+
+   1. Open **System Environment Variables**:  
+      - Press **Start**, type “System Environment Variables” and select **Edit the system environment variables**.  
+      - Click **Environment Variables…**  
+      ![1_SXKEs_Kbm2nKKmXYG7-u1Q](https://github.com/user-attachments/assets/160c796e-3d75-4b24-8690-92034f44cc28)
+
+
+   2. In the **System variables** section, find **Path** and click **Edit**:  
+      ![1_WmdM5oSbC-W4f2NgahX5Mw](https://github.com/user-attachments/assets/7485a84f-52e9-464f-b836-d4fba8aaff46)
+
+
+
+   3. Make sure these entries exist (add them if missing):
+
+```
+   C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\vX.X\bin
+   C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\vX.X\libnvvp
+   C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\vX.X\lib
+   C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\vX.X\include
+
+```
+
+   4. Click **OK** on all dialogs and **restart** your PC.
+
+   5. Ensure **all four** of these paths are listed under **Path**. After you finish editing, the **Edit Environment Variable** window should look similar to this:
+
+   ![1_5wKg2AMqDCpbwlHo4H3Prg](https://github.com/user-attachments/assets/958573d0-6a1b-40f0-b72b-91d5990e9832)
+
+   6. Click **OK** on all dialogs and **restart** your PC.
+
+## ✔️ Verify CUDA & cuDNN Installation
+
+Once your computer restarts, you’re ready to verify that both CUDA and cuDNN were installed correctly.
+
+## 🐍 Python Test Script
+
+To verify both CUDA and cuDNN, save the following code as `code/cudnn_test.py` (or run it in your Jupyter/Colab notebook):
+
+```python
+import tensorflow as tf
+import numpy as np
+import time
+
+def cudnn_performance_test():
+    model = tf.keras.models.Sequential([
+        tf.keras.layers.Conv2D(32, (3, 3), activation='relu', input_shape=(28, 28, 1)),
+        tf.keras.layers.MaxPooling2D((2, 2)),
+        tf.keras.layers.Conv2D(64, (3, 3), activation='relu'),
+        tf.keras.layers.MaxPooling2D((2, 2)),
+        tf.keras.layers.Flatten(),
+        tf.keras.layers.Dense(128, activation='relu'),
+        tf.keras.layers.Dense(10, activation='softmax')
+    ])
+
+    model.compile(optimizer='adam',
+                  loss='sparse_categorical_crossentropy',
+                  metrics=['accuracy'])
+
+    x_train = np.random.random((10000, 28, 28, 1))
+    y_train = np.random.randint(10, size=(10000,))
+
+    start_time = time.time()
+    model.fit(x_train, y_train, epochs=10, batch_size=64, verbose=2)
+    end_time = time.time()
+
+    training_time = end_time - start_time
+    print(f"CuDNN performans testi tamamlandı! Eğitim süresi: {training_time:.2f} saniye")
+
+cudnn_performance_test()
+```
+
+Run it with:
+
+```bash
+python code/cudnn_test.py
+```
+
+You should see output like:
+
+```
+cuDNN performance test completed! Training time: 4.76 seconds
+```
+
+If the script runs successfully and reports a training time, your CUDA and cuDNN setup is confirmed to be working properly on your Windows machine.
